@@ -1,10 +1,47 @@
 package com.carlomatulessy.libhardware
 
+import android.util.Log
+import com.google.android.things.pio.I2cDevice
+import com.google.android.things.pio.PeripheralManager
+import timber.log.Timber
+import java.io.IOException
+
 /**
  *  Kotlin port from Adafruit_PWM_Servo_Driver
  *  <p>https://github.com/adafruit/Adafruit-Motor-HAT-Python-Library/blob/master/Adafruit_MotorHAT/Adafruit_PWM_Servo_Driver.py
  */
-class AdafruitPwm {
+class AdafruitPwm (deviceName: String, address: Int, debug: Boolean) {
+
+    private lateinit var i2c: I2cDevice
+    private lateinit var debug: Boolean
+
+    init {
+        try {
+            Timber.d("Connecting to I2C device %s @ 0x%02X.", deviceName, address)
+            i2c = PeripheralManager.getInstance().openI2cDevice(deviceName, address)
+        } catch (e: IOException) {
+            Timber.e(e, "Unable to access I2C device")
+        }
+
+        this.debug = debug
+        reset()
+    }
+
+    private fun reset() {
+        if(debug) {
+            Timber.d("Resetting PCA9685 MODE1 (without SLEEP) and MODE2")
+        }
+
+        setAllPwm(0,0)
+        writeRegByteWrapper(MODE2, OUTDRV.toByte())
+        writeRegByteWrapper(MODE1, ALLCALL.toByte())
+        sleepWrapped(0.005) // wait for oscillator
+
+        var model = readRegByteWrapped(MODE1)
+        model = (model SLEEP)
+
+    }
+
 
     companion object {
         // Registers
@@ -30,4 +67,5 @@ class AdafruitPwm {
         const val INVRT = 0x10
         const val OUTDRV = 0x04
     }
+
 }
