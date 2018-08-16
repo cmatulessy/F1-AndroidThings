@@ -1,11 +1,9 @@
 package com.carlomatulessy.libhardware
 
-import android.util.Log
 import com.google.android.things.pio.I2cDevice
 import com.google.android.things.pio.PeripheralManager
 import timber.log.Timber
 import java.io.IOException
-import java.io.InterruptedIOException
 import kotlin.experimental.and
 import kotlin.experimental.or
 
@@ -42,7 +40,7 @@ class AdafruitPwm (deviceName: String, address: Int, debug: Boolean) {
     }
 
     private lateinit var i2c: I2cDevice
-    private lateinit var debug: Boolean
+    private var debug = false
 
     init {
         try {
