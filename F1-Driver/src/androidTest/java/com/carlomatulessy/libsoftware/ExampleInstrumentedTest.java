@@ -1,4 +1,4 @@
-package com.carlomatulessy.libsoftwaref1;
+package com.carlomatulessy.libsoftware;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
